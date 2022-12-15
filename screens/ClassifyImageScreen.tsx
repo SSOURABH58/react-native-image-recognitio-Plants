@@ -35,7 +35,6 @@ export default function ClassifyImageScreen() {
     const initializeTfAsync = async () => {
       await tf.ready();
       setIsTfReady(true);
-      tf.setBackend('cpu')
     };
 
     const initializeModelAsync = async () => {
@@ -123,7 +122,7 @@ export default function ClassifyImageScreen() {
         // resize image to avoid out of memory crashes
         const manipResponse = await ImageManipulator.manipulateAsync(
           response.uri,
-          [{ resize: { width: 900 } }],
+          [{ resize: { width: 256 } }],
           { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
         );
 
