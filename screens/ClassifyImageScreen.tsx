@@ -12,15 +12,17 @@ import {
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
 
-import * as mobilenet from "@tensorflow-models/mobilenet";
+// import * as mobilenet from "@tensorflow-models/mobilenet";
 
 import * as jpeg from "jpeg-js";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 
-import { fetch } from "@tensorflow/tfjs-react-native";
+import { decodeJpeg, fetch } from "@tensorflow/tfjs-react-native";
 
 import { Text, View } from "../components/Themed";
+
+import * as FileSystem from 'expo-file-system';
 
 export default function ClassifyImageScreen() {
   const [isTfReady, setIsTfReady] = useState(false);
@@ -36,7 +38,10 @@ export default function ClassifyImageScreen() {
     };
 
     const initializeModelAsync = async () => {
-      model.current = await mobilenet.load();
+      // model.current = await mobilenet.load();
+      model.current = await tf.loadLayersModel('../assets/tfjs_model/model.json').catch(err=>{console.log("Error Loading :",err);
+      });
+      //const model1 = await tf.loadLayersModel('./tfjs_model/model.json')
       setIsModelReady(true);
     };
 
@@ -75,12 +80,29 @@ export default function ClassifyImageScreen() {
     return tf.tensor3d(buffer, [height, width, 3]);
   };
 
+  // const fileUri = 'NON-HTTP-URI-GOES-HERE';      
+  // const imgB64 = await FileSystem.readAsStringAsync(fileUri, {
+  // encoding: FileSystem.EncodingType.Base64,
+  // });
+  // const imgBuffer = tf.util.encodeString(imgB64, 'base64').buffer;
+  // const raw = new Uint8Array(imgBuffer)  
+  // const imageTensor = decodeJpeg(raw);
+
   const classifyImageAsync = async (source) => {
     try {
       const imageAssetPath = Image.resolveAssetSource(source);
-      const response = await fetch(imageAssetPath.uri, {}, { isBinary: true });
-      const rawImageData = await response.arrayBuffer();
-      const imageTensor = imageToTensor(rawImageData);
+      console.log("image path :",imageAssetPath);
+      
+      // const response = await fetch(imageAssetPath.uri, {}, { isBinary: true });
+      const imgB64 = await FileSystem.readAsStringAsync(imageAssetPath?.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const imgBuffer = tf.util.encodeString(imgB64, 'base64').buffer;
+      
+      // const rawImageData = await response.arrayBuffer();
+      const raw = new Uint8Array(imgBuffer) 
+      // const imageTensor = imageToTensor(rawImageData);
+      const imageTensor = decodeJpeg(raw);
       const newPredictions = await model.current.classify(imageTensor);
       setPredictions(newPredictions);
     } catch (error) {
@@ -93,7 +115,7 @@ export default function ClassifyImageScreen() {
       let response = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [1, 1],
       });
 
       if (!response.cancelled) {
@@ -110,7 +132,7 @@ export default function ClassifyImageScreen() {
         await classifyImageAsync(source);
       }
     } catch (error) {
-      console.log(error);
+      console.log("selectImageAsync::",error);
     }
   };
 
@@ -134,7 +156,7 @@ export default function ClassifyImageScreen() {
             </View>
 
             <View style={styles.loadingModelContainer}>
-              <Text style={styles.text}>MobileNet model ready? </Text>
+              <Text style={styles.text}>Planter model ready? </Text>
               {isModelReady ? (
                 <Text style={styles.text}>✅</Text>
               ) : (

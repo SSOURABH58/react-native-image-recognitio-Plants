@@ -7,8 +7,8 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import HomeScreen from "../screens/HomeScreen";
 import ClassifyImageScreen from "../screens/ClassifyImageScreen";
-import DetectObjectsScreen from "../screens/DetectObjectsScreen";
-import DetectFoodsScreen from "../screens/DetectFoodsScreen";
+// import DetectObjectsScreen from "../screens/DetectObjectsScreen";
+// import DetectFoodsScreen from "../screens/DetectFoodsScreen";
 // import TabFiveScreen from "../screens/TabFiveScreen";
 
 import {
@@ -56,7 +56,7 @@ export default function BottomTabNavigator() {
           tabBarLabel: "Classify Image",
         }}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="DetectObjects"
         component={DetectObjectsScreen}
         options={{
@@ -75,7 +75,7 @@ export default function BottomTabNavigator() {
           ),
           tabBarLabel: "Detect Foods",
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 }
