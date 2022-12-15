@@ -18,7 +18,7 @@ import * as jpeg from "jpeg-js";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 
-import { decodeJpeg, fetch } from "@tensorflow/tfjs-react-native";
+import { decodeJpeg } from "@tensorflow/tfjs-react-native";
 
 import { Text, View } from "../components/Themed";
 
@@ -35,6 +35,7 @@ export default function ClassifyImageScreen() {
     const initializeTfAsync = async () => {
       await tf.ready();
       setIsTfReady(true);
+      tf.setBackend('cpu')
     };
 
     const initializeModelAsync = async () => {
